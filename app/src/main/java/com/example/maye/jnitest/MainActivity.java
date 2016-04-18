@@ -35,10 +35,8 @@ public class MainActivity extends AppCompatActivity {
         BackGroundthread = new Thread(){
             @Override
             public void run(){
-                //loop reading for ip info
-                do{
-                    ip_packet = readIpHandle();
-                }while (ip_packet == null);
+                //read for ip info
+                ip_packet = readIpHandle();
 
                 //create vpnService
                 Intent intent = VpnService.prepare(MainActivity.this);
