@@ -24,7 +24,7 @@ public class MyVpnService extends VpnService {
         //a. Configure the TUN and get the interface.
         String ipAddress = intent.getStringExtra("ip");
         String route = intent.getStringExtra("route");
-        String dns = intent.getStringExtra("DNS1");
+        String dns = intent.getStringExtra("DNS2");
         String socket = intent.getStringExtra("socket");
         protect(Integer.parseInt(socket));
         mInterface = builder.setSession("MyVPNService")

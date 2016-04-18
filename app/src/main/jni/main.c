@@ -33,13 +33,15 @@ typedef struct {
 
 #define SERVER_ADDR "2402:f000:1:4417::900"
 #define SERVER_PORT 5678
-#define MAX_BUFFER 8192
+#define MAX_BUFFER 4104
 
 #define MSGTYPE_IP_REQ 100
 #define MSGTYPE_IP_REC 101
 #define MSGTYPE_DATA_SEND 102
 #define MSGTYPE_DATA_RECV 103
 #define MSGTYPE_HEARTBEAT 104
+
+#define SERV_BUFFER 240*1024
 
 #define CHK(expr)  do { if ( (expr) == -1 ) { LOGF("(line %d): ERROR - %s.\n", __LINE__, strerror( errno ) ); exit( 1 );  } } while ( false )
 
@@ -55,6 +57,7 @@ int vpn_handle;
 int fifo_handle_stats;
 
 boolean isClosed = false;
+boolean hasIP = false;
 
 pthread_mutex_t traffic_mutex_in;
 pthread_mutex_t traffic_mutex_out;
@@ -174,6 +177,8 @@ int main(void) {
 
 	struct sockaddr_in6 server_socket;
 	CHK(client_socket = socket(AF_INET6, SOCK_STREAM, 0));
+	int bufferSize = SERV_BUFFER;
+	//setsockopt(client_socket, SOL_SOCKET, SO_RCVBUF, &bufferSize, sizeof(bufferSize));
 	LOGD("socket created!\n");
 
 	bzero(&server_socket, sizeof(server_socket));
@@ -198,18 +203,33 @@ int main(void) {
 	msg.type = MSGTYPE_IP_REQ;
 	memcpy(buffer, &msg, sizeof(Message));
 	CHK(send(client_socket, buffer, sizeof(Message), 0));
-	int len;
+	int len, len2;
+	Message* m_tmp;
 	while(!isClosed) {
 		// Now Receive Package
 		bzero(buffer, MAX_BUFFER + 1);
 
-		CHK(len = recv(client_socket, buffer, MAX_BUFFER, 0));
-		LOGE("Receive %d Bytes From Server!\n", len);
+		CHK(len = recv(client_socket, buffer, 4, 0));
+		int sz = *(int*) buffer - 4;
+		int i = 0;
+		for(i = 0; i < sz; ++i) {
+			CHK(len2 = recv(client_socket, buffer+4+i, 1, 0));
+		}
+//		char* b_tmp = buffer;
+//		sz = len;
+//		m_tmp = (Message*)buffer;
+//		while(m_tmp->length > sz) {
+//			LOGE("sz: %d", sz);
+//			b_tmp += len;
+//			CHK(len = recv(client_socket, b_tmp, m_tmp->length-sz, 0));
+//			sz += len;
+//		}
+		LOGE("Receive %d Bytes From Server!\n", len+sz);
 
 		// Now Parse Package
 		bzero(&msg, sizeof(Message));
 		memcpy(&msg, buffer, sizeof(Message));
-		if(msg.type == MSGTYPE_IP_REC) {
+		if(!hasIP && msg.type == MSGTYPE_IP_REC) {
 			LOGD("Type: IP_REC\nContents: %s\n", msg.data);
 			char b[1024] = "";
 			bzero(b, sizeof(b));
@@ -236,6 +256,7 @@ int main(void) {
 			// Create a new thread for VPN service
 			pthread_t vpn_thread;
 			pthread_create(&vpn_thread, NULL, vpnService, NULL);
+			hasIP = true;
 		}
 		else if(msg.type == MSGTYPE_DATA_RECV) {
 			LOGF("Type: DATA_REC (length: %d)\nContents: %s\n", msg.length, msg.data);
