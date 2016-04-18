@@ -15,6 +15,14 @@ extern "C" {
 JNIEXPORT jstring JNICALL Java_com_example_maye_jnitest_MainActivity_StringFromJNI
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_example_maye_jnitest_MainActivity
+ * Method:    IVI
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_example_maye_jnitest_MainActivity_IVI
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

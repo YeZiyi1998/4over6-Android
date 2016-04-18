@@ -15,7 +15,7 @@ import java.io.FileOutputStream;
  */
 public class MyVpnService extends VpnService {
     private ParcelFileDescriptor mInterface;
-    String ipHandleName = "/tmp/myfifo";
+    String ipHandleName = "/data/data/com.example.maye.jnitest/myfifo";
     //Configure a builder for the interface.
     Builder builder = new Builder();
     // Services interface
@@ -25,6 +25,8 @@ public class MyVpnService extends VpnService {
         String ipAddress = intent.getStringExtra("ip");
         String route = intent.getStringExtra("route");
         String dns = intent.getStringExtra("DNS1");
+        String socket = intent.getStringExtra("socket");
+        protect(Integer.parseInt(socket));
         mInterface = builder.setSession("MyVPNService")
                 .addAddress(ipAddress, 24)
                 .addDnsServer(dns)

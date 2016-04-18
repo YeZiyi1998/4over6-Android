@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.VpnService;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
@@ -15,8 +16,9 @@ public class MainActivity extends AppCompatActivity {
     private Thread BackGroundthread;
     private IpPacket ip_packet;
     //int flag = 0;
-    String ipHandleName = "/tmp/myfifo";
-    String statsHandleName = "/tmp/myfifo_stats";
+    String ipHandleName = "/data/data/com.example.maye.jnitest/myfifo";
+    String statsHandleName = "/data/data/com.example.maye.jnitest/myfifo_stats";
+    private final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("DNS1", ip_packet.DNS1);
             intent.putExtra("DNS2", ip_packet.DNS2);
             intent.putExtra("DNS3", ip_packet.DNS3);
+            intent.putExtra("socket", ip_packet.socket);
             startService(intent);
         }
     }
@@ -77,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
         IpPacket temp_ip_packet = null;
         try {
             FileInputStream fileInputStream = new FileInputStream(file);
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 temp_ip_packet.DNS1 = piece[2];
                 temp_ip_packet.DNS2 = piece[3];
                 temp_ip_packet.DNS3 = piece[4];
+                temp_ip_packet.socket = piece[5];
             }
             in.close();
         }catch (Exception e){
@@ -104,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         String ipAddress;
         String route;
         String DNS1,DNS2,DNS3;
+        String socket;
     }
 
     //native JNI declaration
