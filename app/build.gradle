@@ -11,13 +11,13 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.maye.jnitest"
+        applicationId "com.example.maye.IVI"
         minSdkVersion 22
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         ndk{
-            moduleName "jnitest"
+            moduleName "IVI"
             ldLibs "log"
         }
     }

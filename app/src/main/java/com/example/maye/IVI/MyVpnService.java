@@ -1,4 +1,4 @@
-package com.example.maye.jnitest;
+package com.example.maye.IVI;
 
 import android.content.Intent;
 import android.net.VpnService;
@@ -15,7 +15,7 @@ import java.io.FileOutputStream;
  */
 public class MyVpnService extends VpnService {
     private ParcelFileDescriptor mInterface;
-    String ipHandleName = "/data/data/com.example.maye.jnitest/myfifo";
+    String ipHandleName = "/data/data/com.example.maye.IVI/myfifo";
     //Configure a builder for the interface.
     Builder builder = new Builder();
     // Services interface

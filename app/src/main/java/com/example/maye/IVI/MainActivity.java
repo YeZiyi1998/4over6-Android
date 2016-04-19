@@ -1,4 +1,4 @@
-package com.example.maye.jnitest;
+package com.example.maye.IVI;
 
 import android.content.Intent;
 import android.net.VpnService;
@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.sql.Time;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Timer;
@@ -29,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private  GuiInfo guiInfo;
     private Date startTime;
     private int isStart = 0;
-    String ipHandleName = "/data/data/com.example.maye.jnitest/myfifo";
-    String statsHandleName = "/data/data/com.example.maye.jnitest/myfifo_stats";
+    String ipHandleName = "/data/data/com.example.maye.IVI/myfifo";
+    String statsHandleName = "/data/data/com.example.maye.IVI/myfifo_stats";
     private final String TAG = "MainActivity";
     //user interface components
     private Button startButton;
@@ -236,6 +235,6 @@ public class MainActivity extends AppCompatActivity {
     public native String StringFromJNI();
     public native void IVI();
     static {
-        System.loadLibrary("jnitest");
+        System.loadLibrary("IVI");
     }
 }

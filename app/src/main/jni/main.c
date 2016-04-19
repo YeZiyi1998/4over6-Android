@@ -1,4 +1,4 @@
-#include "com_example_maye_jnitest_MainActivity.h"
+#include "com_example_maye_IVI_MainActivity.h"
 #include<android/log.h>
 
 #define TAG "JNI" // 这个是自定义的LOG的标识
@@ -164,8 +164,8 @@ int main(void) {
 	bzero(buffer, MAX_BUFFER+1);
 
 	int fifo_handle;
-	char * fifo_name = "/data/data/com.example.maye.jnitest/myfifo";
-	char * fifo_name_stats = "/data/data/com.example.maye.jnitest/myfifo_stats";
+	char * fifo_name = "/data/data/com.example.maye.IVI/myfifo";
+	char * fifo_name_stats = "/data/data/com.example.maye.IVI/myfifo_stats";
 	/* create the FIFO (named pipe) */
 	mkfifo(fifo_name, 0666);
 	mkfifo(fifo_name_stats, 0666);
@@ -284,12 +284,12 @@ int main(void) {
 }
 
 
-JNIEXPORT jstring JNICALL Java_com_example_maye_jnitest_MainActivity_StringFromJNI(JNIEnv *env, jobject this)
+JNIEXPORT jstring JNICALL Java_com_example_maye_IVI_MainActivity_StringFromJNI(JNIEnv *env, jobject this)
 {
     return (*env)->NewStringUTF(env, "Hello World From JNI!");
 }
 
-JNIEXPORT void JNICALL Java_com_example_maye_jnitest_MainActivity_IVI(JNIEnv *env, jobject this)
+JNIEXPORT void JNICALL Java_com_example_maye_IVI_MainActivity_IVI(JNIEnv *env, jobject this)
 {
 	LOGD("IVI");
     main();

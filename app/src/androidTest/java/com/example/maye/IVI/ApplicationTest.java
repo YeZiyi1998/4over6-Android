@@ -1,4 +1,4 @@
-package com.example.maye.jnitest;
+package com.example.maye.IVI;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
