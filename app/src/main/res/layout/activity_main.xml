@@ -9,8 +9,44 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.maye.jnitest.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/start_service"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Service" />
+        <TextView
+            android:id="@+id/time_duration"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Time Duration: "/>
+        <TextView
+            android:id="@+id/speed_info"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Speed: "/>
+        <TextView
+            android:id="@+id/send_info"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Send: "/>
+        <TextView
+            android:id="@+id/receive_info"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="Receive: "/>
+        <TextView
+            android:id="@+id/ipv4_addr"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="IPv4 Address: "/>
+        <TextView
+            android:id="@+id/ipv6_addr"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="IPv6 Address: "/>
+    </LinearLayout>
 </RelativeLayout>
