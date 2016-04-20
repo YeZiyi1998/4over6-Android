@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private  GuiInfo guiInfo;
     private Date startTime;
     private int isStart = 0;
+    private long sendBytes, receiveBytes, sendPackets, receivePackets;
     String ipHandleName = "/data/data/com.example.maye.IVI/myfifo";
     String statsHandleName = "/data/data/com.example.maye.IVI/myfifo_stats";
     private final String TAG = "MainActivity";
@@ -43,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sendBytes = 0;
+        receiveBytes = 0;
+        sendPackets = 0;
+        receivePackets = 0;
         //mapping GUI to variables
         startButton = (Button) findViewById(R.id.start_service);
         time_info = (TextView) findViewById(R.id.time_duration);
@@ -204,9 +209,18 @@ public class MainActivity extends AppCompatActivity {
                 if (readLen > 0){
                     String ipStatInfo = new String(buf);
                     String piece[] = ipStatInfo.split(" ");
-                    guiInfo.send_info = "Send: " + piece[0] + " bytes/" + piece[1] + " packets";
-                    guiInfo.receive_info = "Receive: " + piece[2] + " bytes/" + piece[3] + " packets";
-                    guiInfo.time_duration = new Long((new Date()).getTime()-startTime.getTime()).toString();
+                    guiInfo.speed_info = "Speed: "+piece[0]+" bytes/sec for upload "+piece[2]+" bytes/sec for download";
+                    sendBytes += Long.parseLong(piece[0]);
+                    sendPackets += Long.parseLong(piece[1]);
+                    receiveBytes += Long.parseLong(piece[2]);
+                    receivePackets += Long.parseLong(piece[3]);
+                    guiInfo.send_info = "Send: " + Long.toString(sendBytes) + " bytes/" + Long.toString(sendPackets) + " packets";
+                    guiInfo.receive_info = "Receive: " + Long.toString(receiveBytes) + " bytes/" + Long.toString(receivePackets) + " packets";
+                    long time_dura = (new Date().getTime()-startTime.getTime())/1000;
+                    long hour = time_dura/3600;
+                    long min = (time_dura % 3600)/60;
+                    long sec = time_dura % 60;
+                    guiInfo.time_duration = "Time Duration: " + hour + " hour " + min + " minutes " + sec + " seconds";
                     refreshGUI();
                 }
                 in.close();
