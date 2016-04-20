@@ -209,18 +209,18 @@ public class MainActivity extends AppCompatActivity {
                 if (readLen > 0){
                     String ipStatInfo = new String(buf);
                     String piece[] = ipStatInfo.split(" ");
-                    guiInfo.speed_info = "Speed: "+piece[0]+" bytes/sec for upload "+piece[2]+" bytes/sec for download";
+                    guiInfo.speed_info = "Speed: Upload "+piece[0]+" Bytes/s  Download "+piece[2]+" Bytes/s";
                     sendBytes += Long.parseLong(piece[0]);
                     sendPackets += Long.parseLong(piece[1]);
                     receiveBytes += Long.parseLong(piece[2]);
                     receivePackets += Long.parseLong(piece[3]);
-                    guiInfo.send_info = "Send: " + Long.toString(sendBytes) + " bytes/" + Long.toString(sendPackets) + " packets";
-                    guiInfo.receive_info = "Receive: " + Long.toString(receiveBytes) + " bytes/" + Long.toString(receivePackets) + " packets";
+                    guiInfo.send_info = "Send: " + Long.toString(sendBytes) + " Bytes / " + Long.toString(sendPackets) + " packets";
+                    guiInfo.receive_info = "Receive: " + Long.toString(receiveBytes) + " Bytes / " + Long.toString(receivePackets) + " packets";
                     long time_dura = (new Date().getTime()-startTime.getTime())/1000;
                     long hour = time_dura/3600;
                     long min = (time_dura % 3600)/60;
                     long sec = time_dura % 60;
-                    guiInfo.time_duration = "Time Duration: " + hour + " hour " + min + " minutes " + sec + " seconds";
+                    guiInfo.time_duration = "Time Duration: " + hour + " h " + min + " m " + sec + " s";
                     refreshGUI();
                 }
                 in.close();
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 time_info.setText(guiInfo.time_duration);
-                speed_info.setText("Unknown!");
+                speed_info.setText(guiInfo.speed_info);
                 send_info.setText(guiInfo.send_info);
                 receive_info.setText(guiInfo.receive_info);
                 ipv4_addr.setText(guiInfo.ipv4_addr);
