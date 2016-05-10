@@ -73,7 +73,7 @@ void timer() {
 	bzero(buffer, MAX_BUFFER+1);
 	memcpy(buffer, &heart_beat, sizeof(Message));
 
-	while(1) {
+	while(!isClosed) {
 		// First Checkout Heart Beat Time
 		int current_time = time((time_t*)NULL);
 		if(current_time - heartbeat_recv_time >= 60) {
@@ -111,6 +111,7 @@ void timer() {
 		pthread_mutex_unlock(&traffic_mutex_in);
 		sleep(1);
 	}
+	LOGD("timer thread exit \n");
 }
 
 void vpnService() {
@@ -121,7 +122,7 @@ void vpnService() {
 	bzero(&msg, sizeof(Message));
 	fd_set fds;
 
-	while(1) {
+	while(!isClosed) {
 		FD_ZERO(&fds);
 		FD_SET(vpn_handle ,&fds);
 		switch (select(maxfdp, &fds, NULL, NULL, NULL)) {
@@ -156,7 +157,18 @@ void vpnService() {
 				}
 		}
 	}
-	LOGD("vpn_handle read failed! ERROR %d - %s.\n", errno, strerror( errno ));
+	LOGD("vpn_handle thread exit \n");
+}
+
+void waitExit() {
+	char buffer[MAX_BUFFER+1];
+	bzero(buffer, MAX_BUFFER+1);
+	while(!isClosed) {
+		int len = read(fifo_handle, buffer, MAX_BUFFER);
+		if(buffer[0] == '9' && buffer[1] == '9' && buffer[2] == '9') {
+			isClosed = true;
+		}
+	}
 }
 
 int main(void) {
@@ -254,8 +266,9 @@ int main(void) {
 			vpn_handle = ntohl(vpn_handle);
 			LOGD("Get VPN Handle %d Succeeded!\n", vpn_handle);
 			// Create a new thread for VPN service
-			pthread_t vpn_thread;
+			pthread_t vpn_thread, exit_thread;
 			pthread_create(&vpn_thread, NULL, vpnService, NULL);
+			pthread_create(&exit_thread, NULL, waitExit, NULL);
 			hasIP = true;
 		}
 		else if(msg.type == MSGTYPE_DATA_RECV) {
@@ -291,6 +304,7 @@ JNIEXPORT jstring JNICALL Java_com_example_maye_IVI_MainActivity_StringFromJNI(J
 
 JNIEXPORT void JNICALL Java_com_example_maye_IVI_MainActivity_IVI(JNIEnv *env, jobject this)
 {
-	LOGD("IVI");
+	LOGD("IVI thread Starts!");
     main();
+    LOGD("IVI thread Ends!");
 }
