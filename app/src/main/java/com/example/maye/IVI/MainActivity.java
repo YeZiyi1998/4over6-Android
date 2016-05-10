@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     BufferedOutputStream out = new BufferedOutputStream(fileOutputStream);
-                    byte goodbye[] = "999".getBytes();
+                    byte goodbye[] = "999\n".getBytes();
                     out.write(goodbye, 0, goodbye.length);
                     out.flush();
                     out.close();
