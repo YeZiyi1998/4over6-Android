@@ -12,8 +12,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -32,8 +34,10 @@ public class MainActivity extends AppCompatActivity {
     String ipHandleName = "/data/data/com.example.maye.IVI/myfifo";
     String statsHandleName = "/data/data/com.example.maye.IVI/myfifo_stats";
     private final String TAG = "MainActivity";
+    Intent serviceIntent;
     //user interface components
     private Button startButton;
+    private Button stopButton;
     private TextView time_info;
     private TextView speed_info;
     private TextView send_info;
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         receivePackets = 0;
         //mapping GUI to variables
         startButton = (Button) findViewById(R.id.start_service);
+        stopButton = (Button) findViewById(R.id.stop_service);
         time_info = (TextView) findViewById(R.id.time_duration);
         speed_info = (TextView) findViewById(R.id.speed_info);
         send_info = (TextView) findViewById(R.id.send_info);
@@ -103,20 +108,43 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //push button to stop service
+        stopButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                File file = new File(ipHandleName);
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    BufferedOutputStream out = new BufferedOutputStream(fileOutputStream);
+                    byte goodbye[] = "999".getBytes();
+                    out.write(goodbye, 0, goodbye.length);
+                    out.flush();
+                    out.close();
+                    BackGroundthread.interrupt();
+                    stopService(serviceIntent);
+                    isStart = 0;
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 
     protected void onActivityResult(int request, int result, Intent data) {
         if (result == RESULT_OK) {
-            Intent intent = new Intent(this, MyVpnService.class);
+            serviceIntent = new Intent(this, MyVpnService.class);
             //pass information which vpn service need
-            intent.putExtra("ip", ip_packet.ipAddress);
-            intent.putExtra("route", ip_packet.route);
-            intent.putExtra("DNS1", ip_packet.DNS1);
-            intent.putExtra("DNS2", ip_packet.DNS2);
-            intent.putExtra("DNS3", ip_packet.DNS3);
-            intent.putExtra("socket", ip_packet.socket);
-            startService(intent);
+            serviceIntent.putExtra("ip", ip_packet.ipAddress);
+            serviceIntent.putExtra("route", ip_packet.route);
+            serviceIntent.putExtra("DNS1", ip_packet.DNS1);
+            serviceIntent.putExtra("DNS2", ip_packet.DNS2);
+            serviceIntent.putExtra("DNS3", ip_packet.DNS3);
+            serviceIntent.putExtra("socket", ip_packet.socket);
+            startService(serviceIntent);
         }
     }
 
