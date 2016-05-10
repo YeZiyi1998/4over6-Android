@@ -97,7 +97,7 @@ void timer() {
 		}
 		// Send Stats
 		bzero(fifo_buffer, MAX_BUFFER+1);
-		sprintf(fifo_buffer, "%d %d %d %d", out_length, out_times, in_length, in_times);
+		sprintf(fifo_buffer, "%d %d %d %d ", out_length, out_times, in_length, in_times);
 		CHK(write(fifo_handle_stats, fifo_buffer, strlen(fifo_buffer) + 1));
 
 		// Clear Stats
