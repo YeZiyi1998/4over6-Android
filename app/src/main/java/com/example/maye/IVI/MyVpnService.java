@@ -30,7 +30,9 @@ public class MyVpnService extends VpnService {
         mInterface = builder.setSession("MyVPNService")
                 .addAddress(ipAddress, 24)
                 .addDnsServer(dns)
-                .addRoute(route, 0).establish();
+                .addRoute(route, 0)
+                .setMtu(1000)
+                .establish();
         try{
             File file = new File(ipHandleName);
             FileOutputStream fileOutputStream = new FileOutputStream(file);

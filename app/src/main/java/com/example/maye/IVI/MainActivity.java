@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView receive_info;
     private TextView ipv4_addr;
     private TextView ipv6_addr;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,26 +72,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
-        //create Background thread
-        BackGroundthread = new Thread(){
-            @Override
-            public void run(){
-                //read for ip info
-                ip_packet = readIpHandle();
-                guiInfo.ipv4_addr = ip_packet.ipAddress;
-                //create vpnService
-                Intent intent = VpnService.prepare(MainActivity.this);
-                if (intent != null) {
-                    startActivityForResult(intent, 0);
-                } else {
-                    onActivityResult(0, RESULT_OK, null);
-                }
-                //start timer for GUI refreshing
-                startTime = new Date();
-                Timer timer = new Timer();
-                timer.schedule(new MyTask(), 500, 1000);//500ms delay and 1s cycle
-            }
-        };
+
 
         //push button to start service
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +82,27 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 guiInfo.ipv6_addr = getLocalIpAddress();
                 if (isStart == 0 && guiInfo.ipv6_addr != null) {
-                    IVIthread.start();
+                    new Thread(new MyRunnable()).start();
+                    //create Background thread
+                    BackGroundthread = new Thread(){
+                        @Override
+                        public void run(){
+                            //read for ip info
+                            ip_packet = readIpHandle();
+                            guiInfo.ipv4_addr = ip_packet.ipAddress;
+                            //create vpnService
+                            Intent intent = VpnService.prepare(MainActivity.this);
+                            if (intent != null) {
+                                startActivityForResult(intent, 0);
+                            } else {
+                                onActivityResult(0, RESULT_OK, null);
+                            }
+                            //start timer for GUI refreshing
+                            startTime = new Date();
+                            Timer timer = new Timer();
+                            timer.schedule(new MyTask(), 500, 1000);//500ms delay and 1s cycle
+                        }
+                    };
                     BackGroundthread.start();
                     isStart = 1;
                 }else if (guiInfo.ipv6_addr == null){
@@ -124,7 +126,9 @@ public class MainActivity extends AppCompatActivity {
                     out.flush();
                     out.close();
                     BackGroundthread.interrupt();
-                    stopService(serviceIntent);
+
+                    boolean b = stopService(serviceIntent);
+                    Log.d(TAG, new Boolean(b).toString());
                     isStart = 0;
                 }catch (Exception e){
                     e.printStackTrace();
@@ -278,5 +282,12 @@ public class MainActivity extends AppCompatActivity {
     public native void IVI();
     static {
         System.loadLibrary("IVI");
+    }
+
+    class MyRunnable implements Runnable {
+        @Override
+        public void run() {
+            IVI();
+        }
     }
 }

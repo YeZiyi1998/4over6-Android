@@ -54,6 +54,7 @@ int in_times = 0;
 
 int client_socket;
 int vpn_handle;
+int fifo_handle;
 int fifo_handle_stats;
 
 boolean isClosed = false;
@@ -172,10 +173,18 @@ void waitExit() {
 }
 
 int main(void) {
+	isClosed = false;
+	hasIP = false;
+	heartbeat_send_counter = 0;
+	heartbeat_recv_time = 0;
+	out_length = 0;
+	out_times = 0;
+	in_length = 0;
+	in_times = 0;
+
 	char buffer[MAX_BUFFER+1];
 	bzero(buffer, MAX_BUFFER+1);
 
-	int fifo_handle;
 	char * fifo_name = "/data/data/com.example.maye.IVI/myfifo";
 	char * fifo_name_stats = "/data/data/com.example.maye.IVI/myfifo_stats";
 	/* create the FIFO (named pipe) */
@@ -293,6 +302,12 @@ int main(void) {
 			LOGD("Contents: %s\n", msg.data);
 		}
 	}
+	CHK(close(client_socket));
+	CHK(close(vpn_handle));
+	CHK(close(fifo_handle));
+	CHK(close(fifo_handle_stats));
+	CHK(pthread_mutex_destroy(&traffic_mutex_in));
+	CHK(pthread_mutex_destroy(&traffic_mutex_out));
 	return EXIT_SUCCESS;
 }
 
@@ -306,5 +321,7 @@ JNIEXPORT void JNICALL Java_com_example_maye_IVI_MainActivity_IVI(JNIEnv *env, j
 {
 	LOGD("IVI thread Starts!");
     main();
+	close(client_socket);
+
     LOGD("IVI thread Ends!");
 }
