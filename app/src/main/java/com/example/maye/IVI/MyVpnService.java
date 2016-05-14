@@ -21,12 +21,13 @@ public class MyVpnService extends VpnService {
     // Services interface
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //a. Configure the TUN and get the interface.
+        //Configure the TUN and get the interface.
         String ipAddress = intent.getStringExtra("ip");
         String route = intent.getStringExtra("route");
         String dns = intent.getStringExtra("DNS2");
         String socket = intent.getStringExtra("socket");
         protect(Integer.parseInt(socket));
+        //Set MTU equal 1000 to avoid incomplete packet from server
         mInterface = builder.setSession("MyVPNService")
                 .addAddress(ipAddress, 24)
                 .addDnsServer(dns)
@@ -43,13 +44,14 @@ public class MyVpnService extends VpnService {
             DataOutputStream doutput = new DataOutputStream(boutput);
             doutput.writeInt(fd);
             byte[] buf = boutput.toByteArray();
+            //Pass the file descriptor to background
             out.write(buf, 0, buf.length);
             out.flush();
             out.close();
         }catch(Exception e){
             e.printStackTrace();
         }
-        //start the service
+        //Start the service
         return START_STICKY;
     }
 

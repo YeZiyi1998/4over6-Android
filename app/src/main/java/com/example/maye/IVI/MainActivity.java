@@ -63,16 +63,6 @@ public class MainActivity extends AppCompatActivity {
         ipv4_addr = (TextView) findViewById(R.id.ipv4_addr);
         ipv6_addr = (TextView) findViewById(R.id.ipv6_addr);
         guiInfo = new GuiInfo();
-        //create C thread
-        IVIthread = new Thread(){
-            @Override
-            public void run(){
-                IVI();
-            }
-        };
-
-
-
 
         //push button to start service
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +72,14 @@ public class MainActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 guiInfo.ipv6_addr = getLocalIpAddress();
                 if (isStart == 0 && guiInfo.ipv6_addr != null) {
-                    new Thread(new MyRunnable()).start();
+                    //create C thread
+                    IVIthread = new Thread(){
+                        @Override
+                        public void run(){
+                            IVI();
+                        }
+                    };
+                    IVIthread.start();
                     //create Background thread
                     BackGroundthread = new Thread(){
                         @Override
@@ -104,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     };
                     BackGroundthread.start();
+                    //Set start flag
                     isStart = 1;
                 }else if (guiInfo.ipv6_addr == null){
                     Log.d(TAG, "network unavailable!");
@@ -122,13 +120,13 @@ public class MainActivity extends AppCompatActivity {
                     FileOutputStream fileOutputStream = new FileOutputStream(file);
                     BufferedOutputStream out = new BufferedOutputStream(fileOutputStream);
                     byte goodbye[] = "999\n".getBytes();
+                    //Notify the background C thread
                     out.write(goodbye, 0, goodbye.length);
                     out.flush();
                     out.close();
                     BackGroundthread.interrupt();
-
-                    boolean b = stopService(serviceIntent);
-                    Log.d(TAG, new Boolean(b).toString());
+                    stopService(serviceIntent);
+                    //Clear the start flag
                     isStart = 0;
                 }catch (Exception e){
                     e.printStackTrace();
@@ -284,10 +282,4 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("IVI");
     }
 
-    class MyRunnable implements Runnable {
-        @Override
-        public void run() {
-            IVI();
-        }
-    }
 }
