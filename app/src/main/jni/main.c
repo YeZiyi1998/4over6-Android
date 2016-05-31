@@ -80,7 +80,6 @@ void timer() {
 		if(current_time - heartbeat_recv_time >= 60) {
 			// We Lost Server
 			// isClosed = true;
-			// TODO: Change this
 			LOGF("We Lost Server!!!\n");
 			exit(1);
 		}
@@ -236,15 +235,6 @@ int main(void) {
 		for(i = 0; i < sz; ++i) {
 			CHK(len2 = recv(client_socket, buffer+4+i, 1, 0));
 		}
-//		char* b_tmp = buffer;
-//		sz = len;
-//		m_tmp = (Message*)buffer;
-//		while(m_tmp->length > sz) {
-//			LOGE("sz: %d", sz);
-//			b_tmp += len;
-//			CHK(len = recv(client_socket, b_tmp, m_tmp->length-sz, 0));
-//			sz += len;
-//		}
 		LOGE("Receive %d Bytes From Server!\n", len+sz);
 
 		// Now Parse Package
